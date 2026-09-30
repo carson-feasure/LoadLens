@@ -13,12 +13,17 @@ Verified locally on September 29, 2026 from `app/` using Node `20.10.0`, npm `10
 | `npm run build` | Passed, exit 0; 2,226 modules transformed. |
 | `npm run test:e2e` | Passed: 18 tests; 2 intentional project-specific skips. |
 | `npx playwright test e2e/offline-package.spec.ts --project=mobile-390` | Passed: the self-contained package opened from a `file://` URL and rendered its dashboard data and navigation. |
+| `npm run build -- --base=/LoadLens/` | Passed: GitHub Pages production bundle built with the repository base path. |
+| GitHub Actions run `36657364024` | Passed: install, 25 unit tests, build, artifact upload, and Pages deployment completed in 39 seconds. |
+| Live Chromium check at `https://carson-feasure.github.io/LoadLens/` | Passed: HTTP 200, dashboard heading and 23-hour peak rendered, Build showed 4 courses / 16 units, no page errors, and no 390px horizontal overflow. |
 
 The Playwright skips are not untested requirements: the mobile-menu/recovery test runs in the 390px project and is skipped only in the desktop project; the cross-width sweep runs once and is likewise skipped only in the duplicate desktop project. Both 390×844 and 1440×1000 projects run the planning, comparison, persistence, study, course-detail, overflow, and screenshot flows.
 
 The production build reports one non-failing bundle-size warning: the main minified JS chunk is 722.85 kB (202.48 kB gzip). Route-level code splitting is a future optimization, not a runtime blocker for this local prototype.
 
 The portable build was generated with `npm run package:email`. Its `Open LoadLens.html` entry point contains the production CSS and encoded JavaScript bundle, needs no web server or network connection, and was browser-tested from the filesystem rather than over localhost.
+
+The public class demo is deployed from `main` at `https://carson-feasure.github.io/LoadLens/`. The repository workflow reruns unit tests and the Pages build on every push.
 
 ## Covered behavior
 
