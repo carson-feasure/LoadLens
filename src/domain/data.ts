@@ -11,6 +11,9 @@ export function validateDemoData(value: unknown): DemoData {
     if (!course.id || courseIds.has(course.id)) throw new Error(`Invalid or duplicate course ID: ${course.id}`)
     courseIds.add(course.id)
     if (!Number.isFinite(course.units) || course.units <= 0) throw new Error(`Invalid units for ${course.id}`)
+    if (!Array.isArray(course.programTags) || !course.programTags.length || course.programTags.some((tag) => typeof tag !== 'string' || !tag.trim())) {
+      throw new Error(`Invalid program tags for ${course.id}`)
+    }
     if (course.baseStudyHoursByWeek?.length !== 15 || course.baseStudyHoursByWeek.some((n) => !Number.isFinite(n) || n < 0)) {
       throw new Error(`Invalid workload series for ${course.id}`)
     }

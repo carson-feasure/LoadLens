@@ -18,6 +18,8 @@ export function BuildPage() {
   const group: 'all' | 'ge-example' | 'writing' | 'major' = ['ge-example', 'writing', 'major'].includes(rawGroup ?? '') ? rawGroup as 'ge-example' | 'writing' | 'major' : 'all'
   const rawLevel = searchParams.get('level')
   const level: 'all' | 'light' | 'moderate' | 'heavy' = ['light', 'moderate', 'heavy'].includes(rawLevel ?? '') ? rawLevel as 'light' | 'moderate' | 'heavy' : 'all'
+  const rawProgram = searchParams.get('program')
+  const program = demoData.courses.some((course) => course.programTags.includes(rawProgram ?? '')) ? rawProgram! : 'all'
   const sort: 'code' | 'workload' = searchParams.get('sort') === 'workload' ? 'workload' : 'code'
   const updateParam = (key: string, value: string, defaultValue: string) => {
     setSearchParams((current) => {
@@ -29,9 +31,10 @@ export function BuildPage() {
   const setQuery = (value: string) => updateParam('q', value, '')
   const setGroup = (value: typeof group) => updateParam('group', value, 'all')
   const setLevel = (value: typeof level) => updateParam('level', value, 'all')
+  const setProgram = (value: string) => updateParam('program', value, 'all')
   const setSort = (value: typeof sort) => updateParam('sort', value, 'code')
-  const filtered = useCatalog(query, group, level, sort)
-  const isFiltering = Boolean(query || group !== 'all' || level !== 'all' || sort !== 'code')
+  const filtered = useCatalog(query, group, level, program, sort)
+  const isFiltering = Boolean(query || group !== 'all' || level !== 'all' || program !== 'all' || sort !== 'code')
   const suggested = useMemo(() => demoData.courses.filter((course) => !state.buildDraftCourseIds.includes(course.id)).slice(0, 3), [state.buildDraftCourseIds])
   const metrics = planMetrics(state.buildDraftCourseIds)
   const draftDiffers = JSON.stringify(state.buildDraftCourseIds) !== JSON.stringify(state.currentCourseIds)
@@ -47,7 +50,7 @@ export function BuildPage() {
     <PageHeader eyebrow="SEMESTER PLANNER" title="Build your semester" subtitle="Add your courses to see a projected workload for the term." actions={<span className="step-indicator"><i /> Plan draft</span>} />
     <div className="build-layout">
       <section className="build-discovery">
-        <CourseFilters {...{ query, setQuery, group, setGroup, level, setLevel, sort, setSort }} />
+        <CourseFilters {...{ query, setQuery, group, setGroup, level, setLevel, program, setProgram, sort, setSort }} onClear={() => setSearchParams({}, { replace: true })} />
         <div className="card suggestion-card">
           <div className="section-title-row"><div><h2>{isFiltering ? 'Catalog results' : 'Suggested courses'}</h2><p>{isFiltering ? `${filtered.length} matching demo course${filtered.length === 1 ? '' : 's'}` : 'A few illustrative options not already in your draft.'}</p></div>{!isFiltering && <button className="text-button" type="button" onClick={() => setPickerOpen(true)}>See all</button>}</div>
           <CatalogGrid courses={isFiltering ? filtered : suggested} selectedIds={state.buildDraftCourseIds} onAdd={add} />

@@ -1,6 +1,29 @@
 # LoadLens verification results
 
-Verified locally on September 29, 2026 from `app/` using Node `20.10.0`, npm `10.2.3`, Chromium `140.0.7339.186`, Vite `6.4.3`, React Router DOM `7.18.4`, and Vitest `3.2.7`.
+## Feedback clarity pass — October 6, 2026
+
+Verified from the repository root on branch `feedback-clarity-pass` using Node `20.10.0` and npm `10.2.3`.
+
+| Command | Result |
+|---|---|
+| `npm ci` | Passed after rerunning outside the restricted process-spawn sandbox; 347 packages installed. npm reported 13 dependency advisories. No stack upgrade or forced audit fix was made in this scoped UI pass. |
+| `npm run lint` | Passed, exit 0. |
+| `npm run typecheck` | Passed, exit 0. |
+| `npm run test:run` | Passed: 2 files, 25 tests. |
+| `npm run build` | Passed, exit 0; 2,226 modules transformed. Main bundle: 734.89 kB minified / 204.40 kB gzip, with the existing non-failing chunk-size warning. |
+| `npm run package:email` | Passed; rebuilt the self-contained offline package with the updated UI. |
+| `npm run test:e2e` | Passed: 21 tests; 3 intentional project-specific skips. |
+| `npx playwright test e2e/offline-package.spec.ts --project=mobile-390` | Passed: 1 test against the final regenerated `file://` package. |
+
+The first updated Playwright run caught a non-atomic Clear action in the URL-backed catalog filters. Clear was changed to reset all query parameters in one update; the focused mobile/desktop regression passed, followed by the full green suite.
+
+New browser coverage verifies the always-visible code/full-title chart legend, selectable above-limit controls, Week 7 showing the COG 107 Midterm driver, one dashboard chart with no duplicate deadline block, the non-chart 15-week course workload list, richer catalog cards, the demo-labeled major/interest filter, and all existing overflow checks.
+
+The eight main-page captures at 390×844 and 1440×1000 were regenerated and visually inspected. Additional 390px and 1440px course-page captures were inspected from `test-results/`; the 15-week list reflows without whole-page overflow. The local visual-review server was stopped afterward.
+
+## Original MVP verification — September 29, 2026
+
+Verified locally from `app/` using Node `20.10.0`, npm `10.2.3`, Chromium `140.0.7339.186`, Vite `6.4.3`, React Router DOM `7.18.4`, and Vitest `3.2.7`.
 
 ## Final command results
 

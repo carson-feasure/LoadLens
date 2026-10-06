@@ -43,11 +43,11 @@ Run `npm run package:email` to create `deliverables/LoadLens-Email-Package/`. Th
 
 ## Seeded demo and reset
 
-The production UI reads `src/data/demo-data.json`, copied unchanged from the canonical parent fixture. `src/test/expected-metrics.json` is test-only and independently checks the calculations; it is never read by production rendering.
+The production UI reads `src/data/demo-data.json`, derived from the canonical synthetic fixture and expanded to 16 illustrative catalog options for the clarity pass. Every course includes a 15-week base series and demo-labeled interest tags. `src/test/expected-metrics.json` is test-only and independently checks the original Plan A/Plan B calculations; it is never read by production rendering.
 
 Planner state is stored under the single browser key `loadlens.demo.v1`. Build edits remain a draft until **Analyze my workload**. Adjust edits remain a scenario until **Use new schedule**. The avatar/menu action **Reset demo** asks for confirmation and resets only LoadLens's local plan, preferences, comparison, and study records.
 
-The default Plan A has 16 units, a 23-hour Week 7 peak, 240 modeled semester study hours, and three weeks above the 20-hour limit. The prepared Plan B stays at 16 units while changing the peak to 17 hours and the overload count to zero.
+The default Plan A has 16 units, a 23-hrs Week 7 peak, 240 modeled semester study hrs, and three weeks above the 20-hrs/week limit. The prepared Plan B stays at 16 units while changing the peak to 17 hrs and the overload count to zero. Added catalog choices do not change either prepared plan’s arithmetic.
 
 ## Code map
 

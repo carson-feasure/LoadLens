@@ -6,7 +6,8 @@ import { formatDate } from '../domain/dates'
 describe('canonical synthetic fixture', () => {
   test('validates courses, assessments, dates, and 15-week arrays', () => {
     expect(validateDemoData(demoData)).toBe(demoData)
-    expect(demoData.courses).toHaveLength(10)
+    expect(demoData.courses).toHaveLength(16)
+    expect(demoData.courses.every((course) => course.programTags.length > 0)).toBe(true)
     expect(new Set(demoData.assessments.map((item) => item.id)).size).toBe(demoData.assessments.length)
   })
 

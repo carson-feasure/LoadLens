@@ -7,7 +7,7 @@ test('self-contained email package opens directly from file', async ({ page }, t
   const offlineFile = resolve('deliverables', 'LoadLens-Email-Package', 'Open LoadLens.html')
   await page.goto(`${pathToFileURL(offlineFile).href}#/dashboard`)
   await expect(page.getByRole('heading', { name: 'Your semester at a glance' })).toBeVisible()
-  await expect(page.getByText('23 h', { exact: true }).first()).toBeVisible()
+  await expect(page.getByText('23 hrs', { exact: true }).first()).toBeVisible()
   await page.getByRole('link', { name: 'Build' }).click()
   await expect(page.getByRole('heading', { name: 'Build your semester' })).toBeVisible()
   await expect(page.locator('.build-summary')).toContainText('4 courses · 16 units')

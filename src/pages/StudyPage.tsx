@@ -43,7 +43,7 @@ function StudyPlanCard({ choice, selected, onSelect }: { choice: Choice; selecte
 function StudyChart({ choice, yMax }: { choice: Choice; yMax: number }) {
   const plan = choice === 'plan-a' ? planA : planB
   const metrics = planMetrics(plan.courseIds, 20)
-  return <article className="card mini-chart-card"><div className="section-title-row"><div><p className="eyebrow">{plan.name}</p><h3>{metrics.units} units</h3></div><strong>Peak {formatHours(metrics.peakHours)} h</strong></div><WorkloadChart courseIds={plan.courseIds} compact yMax={yMax} showTable={false} /></article>
+  return <article className="card mini-chart-card"><div className="section-title-row"><div><p className="eyebrow">{plan.name}</p><h3>{metrics.units} units</h3></div><strong>Peak {formatHours(metrics.peakHours)} hrs</strong></div><WorkloadChart courseIds={plan.courseIds} compact yMax={yMax} showTable={false} /></article>
 }
 
 function ChoiceButton({ label, selected, onClick }: { label: string; selected: boolean; onClick: () => void }) { return <button type="button" className={selected ? 'choice-button selected' : 'choice-button'} aria-pressed={selected} onClick={onClick}>{selected && <CheckCircle2 />}{label}</button> }

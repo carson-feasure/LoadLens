@@ -27,8 +27,8 @@ export function PreferencesDialog({ open, onClose }: { open: boolean; onClose: (
     <form onSubmit={(event) => { event.preventDefault(); if (valid) { dispatch({ type: 'SET_LIMIT', hours: numeric }); onClose() } }}>
       <p className="muted">Set the weekly study-time limit used to flag demanding weeks. This is a personal planning aid, not a university standard.</p>
       <label className="field-label" htmlFor="study-limit">Weekly study-time limit</label>
-      <div className="input-with-unit"><input id="study-limit" type="number" min="1" max="80" step="0.5" value={value} onChange={(event) => setValue(event.target.value)} aria-describedby="limit-help limit-error" /><span>hours/week</span></div>
-      <p id="limit-help" className="field-help">Choose a value from 1 to 80 hours.</p>
+      <div className="input-with-unit"><input id="study-limit" type="number" min="1" max="80" step="0.5" value={value} onChange={(event) => setValue(event.target.value)} aria-describedby="limit-help limit-error" /><span>hrs/week</span></div>
+      <p id="limit-help" className="field-help">Choose a value from 1 to 80 hrs.</p>
       {!valid && <p id="limit-error" className="field-error">Enter a valid limit from 1 to 80.</p>}
       <div className="modal-actions"><button className="button secondary" type="button" onClick={onClose}>Cancel</button><button className="button primary" type="submit" disabled={!valid}>Save limit</button></div>
     </form>
