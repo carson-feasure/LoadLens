@@ -1,7 +1,7 @@
 import { AlertTriangle, ArrowRight, ChevronLeft, ChevronRight, Info } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { courseMap, demoData } from '../domain/data'
-import { formatHours, planMetrics, weekBreakdown } from '../domain/calculations'
+import { assessmentKindLabel, formatHours, planMetrics, weekBreakdown } from '../domain/calculations'
 import { formatDate, weekLabel } from '../domain/dates'
 import { CourseDot } from './Courses'
 
@@ -30,7 +30,7 @@ export function WeekBreakdown({ courseIds, week, threshold, onWeekChange, linkCo
       return <li key={row.courseId}><CourseDot color={course.color} /><div>
         <div className="breakdown-primary"><div className="breakdown-course">{linkCourses ? <Link to={`/courses/${course.id}?origin=current`}>{course.code}</Link> : <strong>{course.code}</strong>}<span>{course.title}</span></div><strong>{formatHours(row.totalHours)} hrs</strong></div>
         <p className="recurring-hours">{formatHours(row.recurringHours)} hrs recurring study</p>
-        {assessments.length ? <ul className="breakdown-assessments">{assessments.map((item) => <li key={item.id}><strong>{item.title}</strong><span>{item.kind} · due {formatDate(item.dueDate, { weekday: 'short', month: 'short', day: 'numeric' })} · {formatHours(item.additionalStudyHours)} hrs extra</span></li>)}</ul> : <p className="no-deadline">No illustrative assessment deadline this week.</p>}
+        {assessments.length ? <ul className="breakdown-assessments">{assessments.map((item) => <li key={item.id}><strong>{assessmentKindLabel(item.kind)} · {item.title}</strong><span>Due {formatDate(item.dueDate, { weekday: 'short', month: 'short', day: 'numeric' })} · {formatHours(item.additionalStudyHours)} hrs extra</span></li>)}</ul> : <p className="no-deadline">No illustrative assessment deadline this week.</p>}
       </div></li>
     })}</ul> : <div className="empty-inline"><span>No courses contribute to this week.</span></div>}
     <p className="breakdown-note">Workload estimates include recurring study plus extra assessment preparation outside scheduled class meetings.</p>

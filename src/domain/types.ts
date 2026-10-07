@@ -8,7 +8,7 @@ export interface Course {
   id: CourseId; code: string; title: string; units: number; color: string
   catalogGroup: 'ge-example' | 'writing' | 'major'; sectionLabel: string
   meetingPattern: string; description: string; programTags: string[]; baseStudyHoursByWeek: number[]
-  sampleSyllabusOverview: string; sourceLabel: string; catalogVerified: false
+  sampleSyllabusOverview: string; sourceLabel: string; sourceUrl?: string; catalogVerified: false
   requirementEligibilityVerified: false; isDemo: true
 }
 export interface Assessment {

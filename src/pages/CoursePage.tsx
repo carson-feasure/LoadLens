@@ -1,7 +1,8 @@
-import { ArrowLeft, ArrowRight, Check, Plus, Trash2 } from 'lucide-react'
+import { useState } from 'react'
+import { ArrowLeft, ArrowRight, Check, Plus, Trash2, Upload } from 'lucide-react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { courseMap, demoData } from '../domain/data'
-import { courseWeekContribution, formatHours, planMetrics } from '../domain/calculations'
+import { assessmentKindLabel, courseWeekContribution, formatHours, planMetrics } from '../domain/calculations'
 import { formatDate, weekLabel } from '../domain/dates'
 import { usePlanner } from '../state/planner'
 import { CourseDot } from '../components/Courses'
@@ -11,6 +12,7 @@ const tabs = ['workload', 'syllabus', 'details'] as const
 type Tab = typeof tabs[number]
 
 export function CoursePage() {
+  const [uploadNotice, setUploadNotice] = useState(false)
   const { courseId } = useParams()
   const course = courseId ? courseMap.get(courseId) : undefined
   const [params, setParams] = useSearchParams()
@@ -43,14 +45,14 @@ export function CoursePage() {
           return <button type="button" key={week.week} className={`course-week-row${isSelected ? ' selected' : ''}${isPeak ? ' peak' : ''}`} aria-pressed={isSelected} onClick={() => dispatch({ type: 'SELECT_WEEK', week: week.week })}>
             <span className="course-week-when"><strong>Week {week.week}</strong><small>{weekLabel(week.week)}</small></span>
             <span className="course-week-hours"><strong>{formatHours(row.totalHours)} hrs total</strong><small>{formatHours(row.recurringHours)} hrs recurring · {formatHours(row.assessmentHours)} hrs extra</small></span>
-            <span className="course-week-deadlines">{assessments.length ? assessments.map((item) => <span key={item.id}><strong>{item.title}</strong><small>{item.kind} · due {formatDate(item.dueDate, { month: 'short', day: 'numeric' })} · {formatHours(item.additionalStudyHours)} hrs</small></span>) : <small>No illustrative deadline</small>}</span>
+            <span className="course-week-deadlines">{assessments.length ? assessments.map((item) => <span key={item.id}><strong>{assessmentKindLabel(item.kind)} · {item.title}</strong><small>Due {formatDate(item.dueDate, { month: 'short', day: 'numeric' })} · {formatHours(item.additionalStudyHours)} hrs</small></span>) : <small>No illustrative deadline</small>}</span>
             <span className="course-week-flags">{isPeak && <em>Peak</em>}{isSelected && <em>Selected</em>}</span>
           </button>
         })}</div>
       </section>
     </section>}
-    {tab === 'syllabus' && <section className="course-tab-panel card syllabus-panel" role="tabpanel"><div><p className="eyebrow">ILLUSTRATIVE DOCUMENT</p><h2>Sample syllabus</h2><p>{course.sampleSyllabusOverview}</p></div><div className="syllabus-list">{demoData.assessments.filter((item) => item.courseId === course.id).map((item) => <article key={item.id}><span>Week {item.week}</span><div><h3>{item.title}</h3><p>{formatDate(item.dueDate, { weekday: 'short', month: 'long', day: 'numeric' })} · {item.kind} · {formatHours(item.additionalStudyHours)} hrs extra study</p></div></article>)}</div></section>}
-    {tab === 'details' && <section className="course-tab-panel details-grid" role="tabpanel"><div className="card"><p className="eyebrow">COURSE DETAILS</p><h2>{course.code}</h2><dl><div><dt>Title</dt><dd>{course.title}</dd></div><div><dt>Units</dt><dd>{course.units}</dd></div><div><dt>Sample section</dt><dd>{course.sectionLabel}</dd></div><div><dt>Meeting pattern</dt><dd>{course.meetingPattern}</dd></div><div><dt>Catalog grouping</dt><dd>{course.catalogGroup.replace('-', ' ')}</dd></div><div><dt>Demo interests</dt><dd>{course.programTags.join(', ')}</dd></div></dl></div><div className="card trust-card"><p className="eyebrow">SOURCE LIMITATION</p><h2>Illustrative only</h2><p>{course.sourceLabel}. Course-code/title pairings, term availability, prerequisite details, and requirement eligibility have not been verified.</p><p><Check /> No real instructor or registration status is represented.</p></div></section>}
+    {tab === 'syllabus' && <section className="course-tab-panel card syllabus-panel" role="tabpanel"><div className="syllabus-header"><div><p className="eyebrow">ILLUSTRATIVE DOCUMENT</p><h2>Sample syllabus</h2><p>{course.sampleSyllabusOverview}</p></div><button className="button secondary" type="button" onClick={() => setUploadNotice(true)}><Upload /> Upload Syllabus</button></div>{uploadNotice && <p className="prototype-notice" role="status">Prototype feature — upload coming later.</p>}<div className="syllabus-list">{demoData.assessments.filter((item) => item.courseId === course.id).map((item) => <article key={item.id}><span>Week {item.week}</span><div><h3>{assessmentKindLabel(item.kind)} · {item.title}</h3><p>{formatDate(item.dueDate, { weekday: 'short', month: 'long', day: 'numeric' })} · {formatHours(item.additionalStudyHours)} hrs extra study</p></div></article>)}</div></section>}
+    {tab === 'details' && <section className="course-tab-panel details-grid" role="tabpanel"><div className="card"><p className="eyebrow">COURSE DETAILS</p><h2>{course.code}</h2><dl><div><dt>Title</dt><dd>{course.title}</dd></div><div><dt>Units</dt><dd>{course.units}</dd></div><div><dt>Sample section</dt><dd>{course.sectionLabel}</dd></div><div><dt>Meeting pattern</dt><dd>{course.meetingPattern}</dd></div><div><dt>Catalog grouping</dt><dd>{course.catalogGroup.replace('-', ' ')}</dd></div><div><dt>Demo interests</dt><dd>{course.programTags.join(', ')}</dd></div></dl></div><div className="card trust-card"><p className="eyebrow">SOURCE LIMITATION</p><h2>{course.sourceUrl ? 'Public source + demo estimates' : 'Illustrative only'}</h2><p>{course.sourceLabel}. Meeting times, dates, assignment schedules, workload estimates, and requirement eligibility remain illustrative unless the cited source says otherwise.</p>{course.sourceUrl && <p><a href={course.sourceUrl} target="_blank" rel="noreferrer">View public USC source</a></p>}<p><Check /> No real instructor or registration status is represented.</p></div></section>}
     <DemoNotice />
   </div>
 }

@@ -11,7 +11,7 @@ import { NotFoundPage } from './pages/NotFoundPage'
 export function App() {
   return <Routes>
     <Route element={<AppShell />}>
-      <Route index element={<Navigate replace to="/dashboard" />} />
+      <Route index element={<Navigate replace to="/build" />} />
       <Route path="dashboard" element={<DashboardPage />} />
       <Route path="build" element={<BuildPage />} />
       <Route path="overview" element={<OverviewPage />} />

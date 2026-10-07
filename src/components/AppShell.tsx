@@ -4,7 +4,7 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { STORAGE_KEY, usePlanner } from '../state/planner'
 import { AboutDialog, PreferencesDialog } from './Dialogs'
 
-const links: ReadonlyArray<readonly [string, string]> = [['/dashboard', 'Dashboard'], ['/build', 'Build'], ['/overview', 'Overview'], ['/adjust', 'Adjust']]
+const links: ReadonlyArray<readonly [string, string]> = [['/build', 'Build'], ['/dashboard', 'Dashboard'], ['/overview', 'Overview'], ['/adjust', 'Adjust']]
 
 export function AppShell() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -30,7 +30,7 @@ export function AppShell() {
     <a className="skip-link" href="#main-content">Skip to content</a>
     <header className="site-header">
       <div className="header-inner">
-        <Link className="brand" to="/dashboard" aria-label="LoadLens dashboard"><span className="brand-mark" aria-hidden="true">L</span><span>LoadLens</span></Link>
+        <Link className="brand" to="/build" aria-label="LoadLens semester builder"><span className="brand-mark" aria-hidden="true">L</span><span>LoadLens</span></Link>
         <nav className="desktop-nav" aria-label="Primary navigation">
           {links.map(([to, label]) => <NavLink key={to} to={to} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>{label}</NavLink>)}
         </nav>

@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { Bar, BarChart, CartesianGrid, Cell, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { ChevronDown } from 'lucide-react'
-import { courseMap } from '../domain/data'
-import { courseWeekContribution, formatHours, planMetrics } from '../domain/calculations'
+import { courseMap, demoData } from '../domain/data'
+import { assessmentKindLabel, courseWeekContribution, formatHours, planMetrics } from '../domain/calculations'
 import { weekLabel } from '../domain/dates'
 
 interface WorkloadChartProps {
@@ -18,10 +18,16 @@ export function WorkloadChart({ courseIds, selectedWeek = 7, onSelectWeek, thres
     const week = index + 1
     return { week, label: `W${week}`, total: metrics.weeklyTotals[index] ?? 0, ...Object.fromEntries(ids.map((id) => [id, courseWeekContribution(id, week).totalHours])) }
   })
+  const selectedTotal = metrics.weeklyTotals[selectedWeek - 1] ?? 0
+  const selectedRows = ids.map((id) => {
+    const contribution = courseWeekContribution(id, selectedWeek)
+    const assessments = contribution.assessmentIds.map((assessmentId) => demoData.assessments.find((item) => item.id === assessmentId)).filter((item) => item != null)
+    return { course: courseMap.get(id)!, contribution, assessments }
+  })
   if (!ids.length) return <div className="chart-empty"><span>No courses in this plan yet.</span><span>Add courses to see a 15-week workload.</span></div>
 
   return <div className={compact ? 'workload-chart compact' : 'workload-chart'}>
-    {onSelectWeek && <p className="chart-instruction"><strong>Select a week:</strong> click any stacked bar or use the controls below to see its assignments and deadlines.</p>}
+    {onSelectWeek && <p className="chart-instruction"><strong>Select a week:</strong> click any stacked bar or use the controls below. Course names, hours, and major work for the selected stack stay visible without hovering.</p>}
     <div className="chart-visual" role="img" aria-label={`${ariaLabel}. Peak ${formatHours(metrics.peakHours)} hrs in ${metrics.peakWeeks.map((week) => `week ${week}`).join(', ')}.`}>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 18, right: compact ? 4 : 12, left: compact ? -22 : 10, bottom: compact ? 4 : 28 }} onClick={(event) => {
@@ -48,13 +54,21 @@ export function WorkloadChart({ courseIds, selectedWeek = 7, onSelectWeek, thres
       </ResponsiveContainer>
     </div>
     {compact && <p className="chart-axis-caption">Semester week · Study workload (hrs)</p>}
+    {!compact && onSelectWeek && <section className="selected-stack-summary" aria-label={`Selected stack for Week ${selectedWeek}`}>
+      <div className="selected-stack-heading"><div><span>SELECTED STACK</span><strong>Week {selectedWeek} · {formatHours(selectedTotal)} hrs</strong></div><div className="selected-stack-flags">{metrics.peakWeeks.includes(selectedWeek) && <em>PEAK WEEK</em>}{threshold != null && selectedTotal > threshold && <em>ABOVE LIMIT</em>}</div></div>
+      <div className="selected-stack-courses">{selectedRows.map(({ course, contribution, assessments }) => <article key={course.id} style={{ borderTopColor: course.color }}>
+        <div><strong>{course.code}</strong><span>{formatHours(contribution.totalHours)} hrs</span></div>
+        <p>{course.title}</p>
+        {assessments.length ? <small>{assessments.map((item) => `${assessmentKindLabel(item.kind)} · ${item.title}`).join(' + ')}</small> : <small>Recurring study only</small>}
+      </article>)}</div>
+    </section>}
     <ul className="course-legend" aria-label="Course color legend">{ids.map((id) => {
       const course = courseMap.get(id)!
       return <li key={id}><i style={{ backgroundColor: course.color }} /><span><strong>{course.code}</strong>{course.title}</span></li>
     })}</ul>
     {threshold != null && <div className={metrics.highWorkloadWeeks.length ? 'above-limit-summary' : 'above-limit-summary neutral'}>
       <div><strong>{metrics.highWorkloadWeeks.length ? 'Above limit' : 'No weeks above limit'}</strong><span>{metrics.highWorkloadWeeks.length ? `${metrics.highWorkloadWeeks.length} week${metrics.highWorkloadWeeks.length === 1 ? '' : 's'} exceed ${formatHours(threshold)} hrs` : `All modeled weeks are at or below ${formatHours(threshold)} hrs`}</span></div>
-      {metrics.highWorkloadWeeks.length > 0 && <div className="above-limit-weeks">{metrics.highWorkloadWeeks.map((week) => onSelectWeek ? <button type="button" key={week} className={week === selectedWeek ? 'selected' : ''} aria-pressed={week === selectedWeek} onClick={() => onSelectWeek(week)}>Week {week}<span>{formatHours(metrics.weeklyTotals[week - 1]!)} hrs</span></button> : <span key={week}>Week {week} · {formatHours(metrics.weeklyTotals[week - 1]!)} hrs</span>)}</div>}
+      {metrics.highWorkloadWeeks.length > 0 && <div className="above-limit-weeks">{metrics.highWorkloadWeeks.map((week) => onSelectWeek ? <button type="button" key={week} className={week === selectedWeek ? 'selected' : ''} aria-pressed={week === selectedWeek} onClick={() => onSelectWeek(week)}>Week {week}<span>{formatHours(metrics.weeklyTotals[week - 1]!)} hrs</span><small>{metrics.peakWeeks.includes(week) ? 'PEAK WEEK · ABOVE LIMIT' : 'ABOVE LIMIT'}</small></button> : <span key={week}>Week {week} · {formatHours(metrics.weeklyTotals[week - 1]!)} hrs</span>)}</div>}
     </div>}
     {onSelectWeek && <label className="week-select-label">Select a semester week to inspect
       <select value={selectedWeek} onChange={(event) => onSelectWeek(Number(event.target.value))}>{data.map((item) => <option key={item.week} value={item.week}>Week {item.week} · {formatHours(item.total)} hrs · {weekLabel(item.week)}</option>)}</select>

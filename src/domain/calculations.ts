@@ -1,5 +1,5 @@
 import { courseMap, demoData } from './data'
-import type { ComparisonMetrics, Course, CourseId, PlanMetrics, WeekContribution } from './types'
+import type { AssessmentKind, ComparisonMetrics, Course, CourseId, PlanMetrics, WeekContribution } from './types'
 
 export const uniqueValidIds = (ids: CourseId[]) => [...new Set(ids)].filter((id) => courseMap.has(id))
 
@@ -72,4 +72,18 @@ export function matchesCourse(course: Course, query: string) {
 
 export function formatHours(value: number) {
   return Number.isInteger(value) ? `${value}` : value.toFixed(1)
+}
+
+const assessmentKindLabels: Record<AssessmentKind, string> = {
+  exam: 'Exam',
+  essay: 'Essay',
+  project: 'Project',
+  quiz: 'Quiz',
+  reading: 'Reading',
+  discussion: 'Discussion',
+  homework: 'Assignment',
+}
+
+export function assessmentKindLabel(kind: AssessmentKind) {
+  return assessmentKindLabels[kind]
 }

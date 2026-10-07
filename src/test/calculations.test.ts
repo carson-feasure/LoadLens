@@ -1,5 +1,5 @@
 import expected from './expected-metrics.json'
-import { comparisonMetrics, courseWeekContribution, matchesCourse, planMetrics, uniqueValidIds, workloadLevel } from '../domain/calculations'
+import { assessmentKindLabel, comparisonMetrics, courseWeekContribution, matchesCourse, planMetrics, uniqueValidIds, workloadLevel } from '../domain/calculations'
 import { demoData, planA, planB, validateDemoData } from '../domain/data'
 import { formatDate } from '../domain/dates'
 
@@ -88,8 +88,16 @@ describe('canonical synthetic fixture', () => {
     expect(formatDate('2026-08-31', { year: 'numeric', month: '2-digit', day: '2-digit' })).toBe('08/31/2026')
   })
 
-  test.each([['COG107', 'cog-107'], ['cog 107', 'cog-107'], ['107', 'cog-107'], ['academic writing', 'writ-150']])('normalizes search %s', (query, id) => {
+  test.each([['COG107', 'cog-107'], ['cog 107', 'cog-107'], ['107', 'cog-107'], ['writing and critical reasoning', 'writ-150']])('normalizes search %s', (query, id) => {
     expect(matchesCourse(demoData.courses.find((course) => course.id === id)!, query)).toBe(true)
+  })
+
+  test('uses readable assessment labels and records public sources without changing demo math', () => {
+    expect(assessmentKindLabel('exam')).toBe('Exam')
+    expect(assessmentKindLabel('homework')).toBe('Assignment')
+    expect(demoData.courses.filter((course) => course.sourceUrl)).toHaveLength(3)
+    expect(demoData.courses.filter((course) => course.sourceUrl).every((course) => course.sourceUrl?.startsWith('https://'))).toBe(true)
+    expect(planMetrics(planA.courseIds, 20).peakHours).toBe(23)
   })
 
   test('workload categories are derived from fixture values', () => {

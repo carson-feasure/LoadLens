@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "fixtureVersion": "loadlens-demo-v1",
-  "notice": "All course workloads, due dates, section identifiers, and meeting times are SYNTHETIC. Course-code/title pairings are copied from supplied mockups or invented for demonstration and are not verified against the USC catalog. No real GE eligibility, registration, syllabus, forecast accuracy, or student submissions are represented.",
+  "notice": "Course workloads, due dates, section identifiers, and meeting times are SYNTHETIC. A small number of course titles and descriptions are grounded in the public USC sources named on their detail pages; all other course information remains illustrative. No real GE eligibility, registration, syllabus, forecast accuracy, or student submissions are represented.",
   "term": {
     "id": "fall-2026-demo",
     "label": "Fall 2026",
@@ -158,13 +158,13 @@
     {
       "id": "writ-150",
       "code": "WRIT 150",
-      "title": "Academic Writing",
+      "title": "Writing and Critical Reasoning",
       "units": 4,
       "color": "#60A9A0",
       "catalogGroup": "writing",
       "sectionLabel": "DEMO-01",
       "meetingPattern": "Tue/Thu 09:00–10:20",
-      "description": "Reading, drafting, revision, and essays.",
+      "description": "Foundation in academic writing, critical reading, and analytic thinking; the demo assignments emphasize drafting, revision, and essays.",
       "programTags": ["Writing & Communication", "Humanities"],
       "baseStudyHoursByWeek": [
         2,
@@ -183,8 +183,9 @@
         2,
         2
       ],
-      "sampleSyllabusOverview": "Reading, drafting, revision, and essays. All dates, section information, and workloads are synthetic, not an official USC syllabus.",
-      "sourceLabel": "Synthetic demonstration data",
+      "sampleSyllabusOverview": "USC describes WRIT 150 as a freshman-level foundation in academic writing, critical reading, and analytic thinking. The assignments, dates, section information, and workload estimates shown here are synthetic.",
+      "sourceLabel": "Official USC Writing Program title and course purpose; prototype assignments and estimates remain synthetic",
+      "sourceUrl": "https://dornsife.usc.edu/the-writing-program/courses/",
       "catalogVerified": false,
       "requirementEligibilityVerified": false,
       "isDemo": true
@@ -198,7 +199,7 @@
       "catalogGroup": "ge-example",
       "sectionLabel": "DEMO-01",
       "meetingPattern": "Mon/Wed 13:00–14:20",
-      "description": "Reading, quizzes, an illustrative project, and assessments.",
+      "description": "Introduction to research methods, neuroscience, learning, memory, development, personality, and social psychology; demo assessments are illustrative.",
       "programTags": ["Psychology", "Social Sciences"],
       "baseStudyHoursByWeek": [
         2,
@@ -217,8 +218,9 @@
         2,
         2
       ],
-      "sampleSyllabusOverview": "Reading, quizzes, an illustrative project, and assessments. All dates, section information, and workloads are synthetic, not an official USC syllabus.",
-      "sourceLabel": "Synthetic demonstration data",
+      "sampleSyllabusOverview": "A public USC PSYC 100 syllabus covers research methods, brain and behavior, learning, memory, development, personality, and social psychology. This prototype's dates, section information, assignment schedule, and workload estimates are synthetic.",
+      "sourceLabel": "Official public USC PSYC 100 syllabus informed the topic summary; prototype assignments and estimates remain synthetic",
+      "sourceUrl": "https://web-app.usc.edu/soc/syllabus/20243/52451.pdf",
       "catalogVerified": false,
       "requirementEligibilityVerified": false,
       "isDemo": true
@@ -294,13 +296,13 @@
     {
       "id": "geol-107",
       "code": "GEOL 107",
-      "title": "Earth, People, and the Environment",
+      "title": "Oceanography",
       "units": 4,
       "color": "#A37FA6",
       "catalogGroup": "ge-example",
       "sectionLabel": "DEMO-01",
       "meetingPattern": "Mon/Wed 15:00–16:20",
-      "description": "Illustrative readings and midterm/final preparation.",
+      "description": "USC lists GEOL 107 as Oceanography; the readings, assessments, meeting pattern, and workload shown here are illustrative.",
       "programTags": ["Environment", "Earth Science"],
       "baseStudyHoursByWeek": [
         2,
@@ -319,8 +321,9 @@
         2,
         2
       ],
-      "sampleSyllabusOverview": "Illustrative readings and midterm/final preparation. All dates, section information, and workloads are synthetic, not an official USC syllabus.",
-      "sourceLabel": "Synthetic demonstration data",
+      "sampleSyllabusOverview": "The official USC schedule identifies GEOL 107 as Oceanography. All readings, assessments, dates, section information, and workload estimates shown here are synthetic.",
+      "sourceLabel": "Official USC Schedule of Classes title and units; prototype section, assignments, and estimates remain synthetic",
+      "sourceUrl": "https://classes.usc.edu/term/20263/catalogue/ge/requirement/ACORELIT/category/DCL",
       "catalogVerified": false,
       "requirementEligibilityVerified": false,
       "isDemo": true

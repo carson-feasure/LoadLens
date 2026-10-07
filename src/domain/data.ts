@@ -14,6 +14,9 @@ export function validateDemoData(value: unknown): DemoData {
     if (!Array.isArray(course.programTags) || !course.programTags.length || course.programTags.some((tag) => typeof tag !== 'string' || !tag.trim())) {
       throw new Error(`Invalid program tags for ${course.id}`)
     }
+    if (course.sourceUrl) {
+      try { new URL(course.sourceUrl) } catch { throw new Error(`Invalid source URL for ${course.id}`) }
+    }
     if (course.baseStudyHoursByWeek?.length !== 15 || course.baseStudyHoursByWeek.some((n) => !Number.isFinite(n) || n < 0)) {
       throw new Error(`Invalid workload series for ${course.id}`)
     }

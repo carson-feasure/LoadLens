@@ -9,10 +9,29 @@ test.beforeEach(async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Your semester at a glance' })).toBeVisible()
 })
 
+test('Build is the first tab and the default landing route', async ({ page }, testInfo) => {
+  await page.goto('/#/')
+  await expect(page).toHaveURL(/#\/build$/)
+  await expect(page.getByRole('heading', { name: 'Build your semester' })).toBeVisible()
+  await expect(page.locator('.desktop-nav .nav-link').first()).toHaveText('Build')
+  if (testInfo.project.name === 'mobile-390') {
+    await page.getByRole('button', { name: 'Open menu' }).click()
+    await expect(page.locator('.mobile-nav .nav-link').first()).toHaveText('Build')
+  }
+})
+
 test('dashboard exposes all weeks, schedule views, and preference updates', async ({ page }) => {
   await expect(page.getByText('23 hrs', { exact: true }).first()).toBeVisible()
   await expect(page.locator('.dashboard-page .chart-visual')).toHaveCount(1)
   await expect(page.locator('.dashboard-page .course-legend li').filter({ hasText: 'COG 107Data Science for Cognitive Science' })).toBeVisible()
+  const selectedStack = page.locator('[data-testid="dashboard-workload-chart"] .selected-stack-summary')
+  await expect(selectedStack).toContainText('Week 7 · 23 hrs')
+  await expect(selectedStack).toContainText('PEAK WEEK')
+  await expect(selectedStack).toContainText('ABOVE LIMIT')
+  await expect(selectedStack).toContainText('COG 107')
+  await expect(selectedStack).toContainText('Exam · Midterm')
+  await expect(selectedStack).toContainText('WRIT 150')
+  await expect(selectedStack).toContainText('Essay · Essay due')
   const aboveLimit = page.locator('[data-testid="dashboard-workload-chart"] .above-limit-summary')
   await expect(aboveLimit).toContainText('Above limit')
   await expect(aboveLimit.getByRole('button')).toHaveCount(3)
@@ -22,7 +41,7 @@ test('dashboard exposes all weeks, schedule views, and preference updates', asyn
   await expect(breakdown).toContainText('COG 107')
   await expect(breakdown).toContainText('Data Science for Cognitive Science')
   await expect(breakdown).toContainText('Midterm')
-  await expect(breakdown).toContainText('exam')
+  await expect(breakdown).toContainText('Exam · Midterm')
   await expect(page.locator('.dashboard-page .upcoming')).toHaveCount(0)
   await page.locator('.segmented').getByRole('button', { name: 'Week', exact: true }).click()
   await expect(page.getByRole('heading', { name: /Semester agenda/i })).toBeVisible()
@@ -69,7 +88,7 @@ test('catalog cards support rich comparison and the demo interest filter', async
   const search = controls.getByPlaceholder('Search by course name or number')
   await search.fill('GEOL107')
   const card = page.locator('.suggestion-card .catalog-card').filter({ hasText: 'GEOL 107' })
-  await expect(card).toContainText('Illustrative readings and midterm/final preparation.')
+  await expect(card).toContainText('USC lists GEOL 107 as Oceanography')
   await expect(card).toContainText('Meeting')
   await expect(card).toContainText('Mon/Wed 15:00')
   await expect(card).toContainText('avg hrs/week')
@@ -93,8 +112,13 @@ test('course details keep plan context and expose all three tabs', async ({ page
   await expect(page.getByTestId('course-workload-list').getByRole('button', { name: /Week 7/ })).toContainText('Midterm')
   await page.getByRole('tab', { name: 'Syllabus' }).click()
   await expect(page.getByRole('heading', { name: 'Sample syllabus' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Upload Syllabus' })).toBeVisible()
+  await page.getByRole('button', { name: 'Upload Syllabus' }).click()
+  await expect(page.getByText('Prototype feature — upload coming later.')).toBeVisible()
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true)
   await page.getByRole('tab', { name: 'Details' }).click()
-  await expect(page.getByText('Course-code/title pairings')).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Illustrative only' })).toBeVisible()
+  await expect(page.getByText(/workload estimates.*remain illustrative/i)).toBeVisible()
   await page.goto('/#/courses/not-real')
   await expect(page.getByRole('heading', { name: /isn’t available/ })).toBeVisible()
 })
@@ -165,7 +189,7 @@ test('mobile menu, corrupted storage recovery, and unknown route work', async ({
 })
 
 test('page has no whole-document horizontal overflow', async ({ page }) => {
-  for (const route of ['dashboard', 'build', 'overview', 'adjust']) {
+  for (const route of ['dashboard', 'build', 'overview', 'adjust', 'courses/cog-107?tab=syllabus&origin=current']) {
     await page.goto(`/#/${route}`)
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true)
   }
