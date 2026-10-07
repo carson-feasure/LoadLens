@@ -35,7 +35,7 @@ export function AppShell() {
           {links.map(([to, label]) => <NavLink key={to} to={to} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>{label}</NavLink>)}
         </nav>
         <div className="header-tools">
-          <span className="term-chip">Fall 2026 <span aria-hidden="true">·</span> Demo</span>
+          <span className="term-chip">Fall 2026</span>
           <button className="avatar-button" type="button" aria-label="Open demo student menu" onClick={() => setMenuOpen((open) => !open)}>M</button>
           <button ref={menuButton} className="mobile-menu-button" type="button" aria-expanded={menuOpen} aria-controls="mobile-menu" aria-label={menuOpen ? 'Close menu' : 'Open menu'} onClick={() => setMenuOpen((open) => !open)}>{menuOpen ? <X /> : <Menu />}</button>
         </div>

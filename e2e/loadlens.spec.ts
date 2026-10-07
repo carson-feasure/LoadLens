@@ -13,6 +13,7 @@ test('Build is the first tab and the default landing route', async ({ page }, te
   await page.goto('/#/')
   await expect(page).toHaveURL(/#\/build$/)
   await expect(page.getByRole('heading', { name: 'Build your semester' })).toBeVisible()
+  await expect(page.locator('.site-header .term-chip')).toHaveText('Fall 2026')
   await expect(page.locator('.desktop-nav .nav-link').first()).toHaveText('Build')
   if (testInfo.project.name === 'mobile-390') {
     await page.getByRole('button', { name: 'Open menu' }).click()
