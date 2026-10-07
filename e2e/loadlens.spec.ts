@@ -23,6 +23,8 @@ test('Build is the first tab and the default landing route', async ({ page }, te
 test('dashboard exposes all weeks, schedule views, and preference updates', async ({ page }) => {
   await expect(page.getByText('23 hrs', { exact: true }).first()).toBeVisible()
   await expect(page.locator('.dashboard-page .chart-visual')).toHaveCount(1)
+  await expect(page.locator('.dashboard-page .bar-course-label[data-course-code="COG 107"]').first()).toBeVisible()
+  await expect(page.locator('.dashboard-page .bar-course-label[data-course-code="WRIT 150"]').first()).toBeVisible()
   await expect(page.locator('.dashboard-page .course-legend li').filter({ hasText: 'COG 107Data Science for Cognitive Science' })).toBeVisible()
   const selectedStack = page.locator('[data-testid="dashboard-workload-chart"] .selected-stack-summary')
   await expect(selectedStack).toContainText('Week 7 · 23 hrs')

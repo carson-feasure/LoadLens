@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Bar, BarChart, CartesianGrid, Cell, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { Bar, BarChart, CartesianGrid, Cell, LabelList, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis, type LabelProps } from 'recharts'
 import { ChevronDown } from 'lucide-react'
 import { courseMap, demoData } from '../domain/data'
 import { assessmentKindLabel, courseWeekContribution, formatHours, planMetrics } from '../domain/calculations'
@@ -8,6 +8,20 @@ import { weekLabel } from '../domain/dates'
 interface WorkloadChartProps {
   courseIds: string[]; selectedWeek?: number; onSelectWeek?: (week: number) => void
   threshold?: number; compact?: boolean; yMax?: number; showTable?: boolean; ariaLabel?: string
+}
+
+function CourseBarLabel({ viewBox, value, code }: LabelProps & { code: string }) {
+  if (!viewBox || !('x' in viewBox)) return null
+  const { x = 0, y = 0, width = 0, height = 0 } = viewBox
+  const hours = Number(value)
+  if (!hours || width < 11 || height < 17) return null
+  const [subject, number] = code.split(' ')
+  const centerX = x + width / 2
+  const centerY = y + height / 2
+  return <text className="bar-course-label" data-course-code={code} x={centerX} y={centerY} textAnchor="middle" aria-hidden="true">
+    <tspan x={centerX} dy="-0.15em">{subject}</tspan>
+    {number && <tspan x={centerX} dy="1em">{number}</tspan>}
+  </text>
 }
 
 export function WorkloadChart({ courseIds, selectedWeek = 7, onSelectWeek, threshold, compact = false, yMax, showTable = true, ariaLabel = 'Weekly study workload' }: WorkloadChartProps) {
@@ -43,13 +57,17 @@ export function WorkloadChart({ courseIds, selectedWeek = 7, onSelectWeek, thres
             return <div className="chart-tooltip"><strong>Week {datum.week} · {formatHours(datum.total)} hrs</strong><span>{weekLabel(datum.week)}</span>{ids.map((id) => <span key={id}><i style={{ background: courseMap.get(id)!.color }} />{courseMap.get(id)!.code}: {formatHours(datum[id] ?? 0)} hrs</span>)}</div>
           }} />
           {threshold != null && <ReferenceLine y={threshold} stroke="#a61d2d" strokeDasharray="5 4" label={compact ? undefined : { value: `${formatHours(threshold)} hrs limit`, position: 'insideTopRight', fill: '#8c1725', fontSize: 11 }} />}
-          {ids.map((id, index) => <Bar key={id} dataKey={id} stackId="workload" fill={courseMap.get(id)!.color} radius={index === ids.length - 1 ? [3, 3, 0, 0] : 0} maxBarSize={compact ? 18 : 34} isAnimationActive={false}>
-            {data.map((entry) => {
-              const isSelected = entry.week === selectedWeek
-              const isAboveLimit = threshold != null && entry.total > threshold
-              return <Cell key={`${id}-${entry.week}`} cursor={onSelectWeek ? 'pointer' : 'default'} opacity={isSelected || isAboveLimit ? 1 : .72} stroke={isSelected ? '#352d2b' : isAboveLimit ? '#a61d2d' : 'none'} strokeWidth={isSelected ? 2 : isAboveLimit ? 1.25 : 0} />
-            })}
-          </Bar>)}
+          {ids.map((id, index) => {
+            const course = courseMap.get(id)!
+            return <Bar key={id} dataKey={id} stackId="workload" fill={course.color} radius={index === ids.length - 1 ? [3, 3, 0, 0] : 0} maxBarSize={compact ? 18 : 34} isAnimationActive={false}>
+              {data.map((entry) => {
+                const isSelected = entry.week === selectedWeek
+                const isAboveLimit = threshold != null && entry.total > threshold
+                return <Cell key={`${id}-${entry.week}`} cursor={onSelectWeek ? 'pointer' : 'default'} opacity={isSelected || isAboveLimit ? 1 : .72} stroke={isSelected ? '#352d2b' : isAboveLimit ? '#a61d2d' : 'none'} strokeWidth={isSelected ? 2 : isAboveLimit ? 1.25 : 0} />
+              })}
+              {!compact && <LabelList dataKey={id} position="center" content={(props: LabelProps) => <CourseBarLabel {...props} code={course.code} />} />}
+            </Bar>
+          })}
         </BarChart>
       </ResponsiveContainer>
     </div>
