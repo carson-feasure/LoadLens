@@ -1,5 +1,46 @@
 # LoadLens verification results
 
+## Overview landing and navigation — October 13, 2026
+
+The former Dashboard experience is now the single **Overview** page and the default landing route. Primary navigation contains exactly two items in this order: **Overview**, then **Build**. Dashboard and Adjust were removed from the primary tabs; legacy `#/dashboard` links redirect to `#/overview`, while Adjust remains available contextually from **Compare a change**.
+
+| Command | Result |
+|---|---|
+| `npm run lint` | Passed, exit 0. |
+| `npm run typecheck` | Passed, exit 0. |
+| `npm run test:run` | Passed: 4 files, 33 tests. |
+| `npm run build` | Passed; 2,227 modules transformed. Main JS: 749.36 kB minified / 209.36 kB gzip. The existing non-failing chunk warning remains. |
+| `npm run package:email` | Passed; the self-contained offline package was regenerated. |
+| `npm run test:e2e` | Passed: 27 tests with 3 intentional project-specific skips. Coverage includes the Overview landing redirect, two-item desktop/mobile navigation and ordering, retired Dashboard redirect, existing planning flows, and overflow checks. |
+
+The regenerated Overview and Build screenshots at 390px and 1440px were visually inspected. The desktop header shows only Overview and Build in the requested order, and both pages remain readable without horizontal overflow.
+
+## Functional syllabus upload — October 12, 2026
+
+Verified from `app/` on branch `main` using Node `20.10.0` and npm `10.2.3`.
+
+| Command | Result |
+|---|---|
+| `npm run lint` | Passed, exit 0, including `src/`, `server/`, and configuration files. |
+| `npm run typecheck` | Passed, exit 0. |
+| `npm run test:run` | Passed: 4 files, 33 tests. This includes the strict syllabus response validator, upload-file checks, server request/schema checks, parsed-syllabus persistence, and all prior calculations/state tests. |
+| `npm run package:email` | Passed; production build completed and the offline package was regenerated with an explicit notice that AI parsing requires the Node server. Main JS: 753.36 kB minified / 209.58 kB gzip; existing non-failing chunk warning remains. |
+| `npm run test:e2e` | Passed: 25 tests with 3 intentional project-specific skips. Both 390×844 and 1440×1000 projects cover upload, rendered JSON, reload persistence, all prior flows, and syllabus screenshots. |
+| `node scripts/smoke-syllabus.mjs http://127.0.0.1:5174` | Passed against the real OpenAI endpoint: COG 107 and all 3 supplied weeks returned through `gpt-6-luna`. No credential or document body was printed. |
+| `node scripts/smoke-server.mjs http://127.0.0.1:4174` | Passed against the production Node server: site returned HTTP 200 and the upload route returned its expected HTTP 400 validation response without a file. |
+| `npm audit --omit=dev` | Passed: 0 production vulnerabilities after the non-breaking lockfile fix. |
+
+The first full browser run exposed a strict-locator ambiguity in the new weekly output assertion; the selector was scoped to the parsed-week list. A later full run exposed an unrelated ambiguous Build-link selector in the offline package test; that test now uses the exact **Build / Edit my semester** action. The final full suite passed.
+
+The parsed syllabus views were generated and visually inspected at both target viewport sizes:
+
+- `docs/screenshots/mobile-390-syllabus.png`
+- `docs/screenshots/desktop-1440-syllabus.png`
+
+The mobile layout keeps actions and metadata readable without horizontal overflow. The desktop layout uses the existing academic card system and keeps imported JSON, extracted weeks, and seeded demo deadlines visually distinct.
+
+The full development-only audit still reports 12 advisories in the pinned test/lint toolchain (1 moderate, 9 high, 2 critical); npm's proposed resolution requires forced breaking upgrades to Vitest and TypeScript ESLint. No forced upgrade was made in this feature change. Production dependencies audit cleanly.
+
 ## Feedback clarity pass — October 6, 2026
 
 Verified from the repository root on branch `feedback-clarity-pass` using Node `20.10.0` and npm `10.2.3`.

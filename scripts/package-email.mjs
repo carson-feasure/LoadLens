@@ -46,7 +46,7 @@ const offlineModuleLoader = `<script>
 const standaloneHtml = builtIndex
   .replace(scriptMatch[0], offlineModuleLoader)
   .replace(styleMatch[0], `<style>\n${css}\n</style>`)
-  .replace('<head>', '<head>\n    <!-- Self-contained offline LoadLens build. No external assets or network calls are required. -->')
+  .replace('<head>', '<head>\n    <!-- Self-contained offline LoadLens planner. AI syllabus parsing requires the separate Node server and is unavailable in this file. -->')
 
 await writeFile(join(packageRoot, 'Open LoadLens.html'), standaloneHtml, 'utf8')
 
@@ -92,6 +92,9 @@ From source/ with Node 20 installed:
 
 The application uses illustrative demo data only. It is not connected to USC
 registration and does not verify course requirements or forecast accuracy.
+The planner works offline. AI syllabus parsing requires the included Node server,
+an OpenAI API key, and an internet connection, so it is not available from this
+self-contained file.
 `
 
 await writeFile(join(packageRoot, 'README.txt'), readme, 'utf8')

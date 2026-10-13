@@ -1,7 +1,8 @@
 import { createContext, useContext, useEffect, useMemo, useReducer, useState, type Dispatch, type ReactNode } from 'react'
-import { demoData, planA, planB } from '../domain/data'
+import { courseMap, demoData, planA, planB } from '../domain/data'
 import { uniqueValidIds } from '../domain/calculations'
 import type { DashboardView, StudySession } from '../domain/types'
+import { validateParsedSyllabus, type SavedSyllabus } from '../domain/syllabus'
 
 export const STORAGE_KEY = 'loadlens.demo.v1'
 
@@ -12,7 +13,7 @@ export interface PlannerState {
   schemaVersion: 1; fixtureVersion: string; currentCourseIds: string[]; currentPlanRevision: number
   buildDraftCourseIds: string[]; selectedWeek: number; weeklyStudyLimitHours: number
   dashboardView: DashboardView; selectedDate: string; comparison: ComparisonState | null
-  studySessions: StudySession[]
+  studySessions: StudySession[]; uploadedSyllabi: Record<string, SavedSyllabus>
 }
 
 export type PlannerAction =
@@ -23,6 +24,7 @@ export type PlannerAction =
   | { type: 'COMPARISON_INIT' } | { type: 'COMPARISON_ADD'; courseId: string }
   | { type: 'COMPARISON_REMOVE'; courseId: string } | { type: 'COMPARISON_REPLACE'; oldId: string; newId: string }
   | { type: 'COMPARISON_RESET' } | { type: 'COMPARISON_KEEP' } | { type: 'COMPARISON_APPLY' }
+  | { type: 'SYLLABUS_SAVE'; courseId: string; syllabus: SavedSyllabus } | { type: 'SYLLABUS_REMOVE'; courseId: string }
   | { type: 'STUDY_SAVE'; session: StudySession } | { type: 'RESET_DEMO' }
 
 export function createDefaultState(): PlannerState {
@@ -38,6 +40,7 @@ export function createDefaultState(): PlannerState {
     selectedDate: demoData.term.weeks[demoData.defaults.selectedWeek - 1]!.startDate,
     comparison: null,
     studySessions: [],
+    uploadedSyllabi: {},
   }
 }
 
@@ -88,6 +91,15 @@ export function plannerReducer(state: PlannerState, action: PlannerAction): Plan
       const next = uniqueValidIds(state.comparison.draftCourseIds)
       return { ...state, currentCourseIds: next, buildDraftCourseIds: next, currentPlanRevision: state.currentPlanRevision + 1, comparison: null }
     }
+    case 'SYLLABUS_SAVE':
+      if (!courseMap.has(action.courseId)) return state
+      return { ...state, uploadedSyllabi: { ...state.uploadedSyllabi, [action.courseId]: action.syllabus } }
+    case 'SYLLABUS_REMOVE': {
+      if (!(action.courseId in state.uploadedSyllabi)) return state
+      const uploadedSyllabi = { ...state.uploadedSyllabi }
+      delete uploadedSyllabi[action.courseId]
+      return { ...state, uploadedSyllabi }
+    }
     case 'STUDY_SAVE':
       return { ...state, studySessions: [...state.studySessions, action.session] }
     case 'RESET_DEMO':
@@ -113,7 +125,32 @@ export function hydrateState(raw: string | null): { state: PlannerState; recover
       draftCourseIds: uniqueValidIds(stored.comparison.draftCourseIds ?? []),
       baselineRevision: stored.comparison.baselineRevision,
     } : null
-    return { state: { ...defaults, ...stored, currentCourseIds, buildDraftCourseIds, selectedWeek, weeklyStudyLimitHours: limit, dashboardView: view, comparison, studySessions: Array.isArray(stored.studySessions) ? stored.studySessions : [] }, recovered: currentCourseIds.length !== (stored.currentCourseIds?.length ?? 0) }
+    const uploadedSyllabi: Record<string, SavedSyllabus> = {}
+    let recoveredSyllabi = false
+    if (stored.uploadedSyllabi != null && (typeof stored.uploadedSyllabi !== 'object' || Array.isArray(stored.uploadedSyllabi))) {
+      recoveredSyllabi = true
+    } else {
+      for (const [courseId, rawSyllabus] of Object.entries(stored.uploadedSyllabi ?? {})) {
+        try {
+          if (!courseMap.has(courseId) || !rawSyllabus || typeof rawSyllabus !== 'object') throw new Error('invalid syllabus')
+          const candidate = rawSyllabus as Partial<SavedSyllabus>
+          if (typeof candidate.fileName !== 'string' || typeof candidate.model !== 'string' || typeof candidate.parsedAt !== 'string' || Number.isNaN(Date.parse(candidate.parsedAt)) || !Number.isFinite(candidate.sizeBytes) || candidate.sizeBytes! < 1) {
+            throw new Error('invalid syllabus metadata')
+          }
+          uploadedSyllabi[courseId] = {
+            fileName: candidate.fileName,
+            model: candidate.model,
+            parsedAt: candidate.parsedAt,
+            sizeBytes: candidate.sizeBytes!,
+            data: validateParsedSyllabus(candidate.data),
+          }
+        } catch {
+          recoveredSyllabi = true
+        }
+      }
+    }
+    const recoveredIds = currentCourseIds.length !== (stored.currentCourseIds?.length ?? 0) || buildDraftCourseIds.length !== (stored.buildDraftCourseIds?.length ?? currentCourseIds.length)
+    return { state: { ...defaults, ...stored, currentCourseIds, buildDraftCourseIds, selectedWeek, weeklyStudyLimitHours: limit, dashboardView: view, comparison, studySessions: Array.isArray(stored.studySessions) ? stored.studySessions : [], uploadedSyllabi }, recovered: recoveredIds || recoveredSyllabi }
   } catch {
     return { state: createDefaultState(), recovered: true }
   }

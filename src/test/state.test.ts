@@ -1,5 +1,21 @@
 import { createDefaultState, hydrateState, plannerReducer } from '../state/planner'
 import { planA, planB } from '../domain/data'
+import type { SavedSyllabus } from '../domain/syllabus'
+
+const savedSyllabus: SavedSyllabus = {
+  fileName: 'course.pdf',
+  parsedAt: '2026-10-12T12:00:00.000Z',
+  model: 'gpt-6-luna',
+  sizeBytes: 1200,
+  data: {
+    course: { code: 'COG 107', title: 'Data Science for Cognitive Science', term: 'Fall 2026', section: '', instructor: '', units: 4, meetingPattern: '', summary: '' },
+    selectedCourseMatch: { matches: true, explanation: 'Course code matches.' },
+    weeks: [],
+    grading: [],
+    policies: [],
+    warnings: [],
+  },
+}
 
 describe('planner reducer and persistence boundary', () => {
   test('Build edits only the draft until Analyze', () => {
@@ -46,6 +62,14 @@ describe('planner reducer and persistence boundary', () => {
     const limited = plannerReducer(focused, { type: 'SET_LIMIT', hours: 18.5 })
     expect(limited.weeklyStudyLimitHours).toBe(18.5)
     expect(plannerReducer(limited, { type: 'RESET_DEMO' })).toEqual(createDefaultState())
+  })
+
+  test('parsed syllabi save, hydrate, remove, and reset with planner state', () => {
+    const saved = plannerReducer(createDefaultState(), { type: 'SYLLABUS_SAVE', courseId: 'cog-107', syllabus: savedSyllabus })
+    expect(saved.uploadedSyllabi['cog-107']).toEqual(savedSyllabus)
+    expect(hydrateState(JSON.stringify(saved)).state.uploadedSyllabi['cog-107']).toEqual(savedSyllabus)
+    expect(plannerReducer(saved, { type: 'SYLLABUS_REMOVE', courseId: 'cog-107' }).uploadedSyllabi).toEqual({})
+    expect(plannerReducer(saved, { type: 'RESET_DEMO' }).uploadedSyllabi).toEqual({})
   })
 
   test('hydrate recovers corrupted JSON', () => {

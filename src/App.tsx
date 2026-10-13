@@ -1,6 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { AppShell } from './components/AppShell'
-import { DashboardPage } from './pages/DashboardPage'
 import { BuildPage } from './pages/BuildPage'
 import { OverviewPage } from './pages/OverviewPage'
 import { AdjustPage } from './pages/AdjustPage'
@@ -11,8 +10,8 @@ import { NotFoundPage } from './pages/NotFoundPage'
 export function App() {
   return <Routes>
     <Route element={<AppShell />}>
-      <Route index element={<Navigate replace to="/build" />} />
-      <Route path="dashboard" element={<DashboardPage />} />
+      <Route index element={<Navigate replace to="/overview" />} />
+      <Route path="dashboard" element={<Navigate replace to="/overview" />} />
       <Route path="build" element={<BuildPage />} />
       <Route path="overview" element={<OverviewPage />} />
       <Route path="adjust" element={<AdjustPage />} />

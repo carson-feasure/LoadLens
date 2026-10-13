@@ -1,0 +1,21 @@
+COG 107: Data Science for Cognitive Science
+Fall 2026 · Section 12345 · 4 units
+Instructor: Dr. Riley Rivera
+Meetings: Monday and Wednesday, 10:00–11:20 a.m.
+
+Course overview
+This course introduces data collection, visualization, and interpretation for cognitive science.
+
+Weekly schedule
+Week 1 (August 31–September 6): Data and evidence. Read Chapter 1. Setup exercise due September 4, 2026 (5%).
+Week 2 (September 7–13): Descriptive statistics and distributions. Read Chapter 2.
+Week 3 (September 14–20): Visualization. Chart critique due September 18, 2026 (10%).
+
+Grading
+Setup exercises: 20%
+Chart critique: 10%
+Midterm: 30%
+Final project: 40%
+
+Late work policy
+Assignments submitted within 24 hours after the deadline receive a 10% deduction.
